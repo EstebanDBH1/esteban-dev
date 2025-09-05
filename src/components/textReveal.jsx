@@ -2,8 +2,11 @@ import React, { useRef, useState, useEffect } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "gsap";
 import { SplitText } from "gsap/SplitText";
+import { CustomEase } from "gsap/CustomEase";
 
-gsap.registerPlugin(SplitText);
+gsap.registerPlugin(SplitText, CustomEase);
+
+CustomEase.create("myCustomEase", "M0,0 C0.62,0.05 0.01,0.99 1,1");
 
 const TextReveal = () => {
   const contenedorRef = useRef();
@@ -32,7 +35,6 @@ const TextReveal = () => {
         if (parrafo.split) {
           parrafo.split.revert();
         }
-
         // Creamos la instancia de SplitText
         const split = new SplitText(parrafo, {
           type: "lines",
@@ -45,13 +47,11 @@ const TextReveal = () => {
 
         // Guardamos la instancia de split para poder revertirla
         parrafo.split = split;
-
         // Cada "line-inner-wrap" es un div con la línea de texto.
         // Ahora, queremos que el TEXTO dentro de ese div se mueva.
         // SplitText crea un <div> para cada línea, y dentro de ese <div> está el texto.
         // Por defecto, SplitText NO crea un <div> adicional dentro de la línea para el texto.
         // Para tener un doble wrapper, necesitamos una pequeña manipulación del DOM o CSS.
-
         // Opción 1: Manipulación manual del DOM para doble wrapper (más control)
         // Esta opción es más robusta si necesitas controlar el elemento interno.
         split.lines.forEach((lineDiv) => {
@@ -66,11 +66,11 @@ const TextReveal = () => {
           {
             yPercent: 100, // Hace que el texto se anime desde abajo DENTRO de su wrapper con overflow: hidden
             stagger: 0.1,
-            duration: 1.2,
-            ease: "power4.out",
+            skewY: 1,
+            duration: 0.4,
+            ease: "MyCustomEase",
           }
         );
-
         // Si quieres que las líneas también tengan un pequeño desplazamiento hacia arriba (opcional)
         // gsap.from(split.lines, {
         //   y: 20, // Pequeño movimiento del wrapper de la línea
@@ -85,18 +85,17 @@ const TextReveal = () => {
 
   return (
     <div
-      className="container-reveal w-[80%] mx-auto"
+      className="container-reveal"
       ref={contenedorRef}
       // El overflow hidden aquí es para el contenedor general si quieres ocultar todo al principio
       // pero el efecto de máscara por línea se logra con el CSS o JS adicional.
-      style={{ border: "1px solid #ccc", padding: "20px" }}
     >
-      <p className=" text-4xl uppercase font-bold">
-        ¡Cada línea de este texto ahora se revelará con un efecto de máscara
-        individual! Esto significa que verás cada frase emergiendo limpiamente
-        desde la parte inferior, como si apareciera mágicamente desde dentro de
-        su propio contenedor oculto. Es perfecto para un efecto visual dramático
-        y pulido en tu sitio web.
+      <p id="txt" className=" text-4xl">
+        Hola, mi nombre es Esteban y soy desarrollador web front-end. Soy
+        apasionado por la creación de experiencias digitales atractivas y
+        funcionales. Me encanta trabajar con tecnologías modernas como React,
+        JavaScript y CSS para construir interfaces de usuario dinámicas y
+        responsivas.
       </p>
     </div>
   );

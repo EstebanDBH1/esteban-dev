@@ -1,21 +1,13 @@
 import React from "react";
-import { useRef } from "react";
-import { useGSAP } from "@gsap/react";
-import gsap from "gsap";
+import CharReveal from "./components/charReveal";
 import TextReveal from "./components/textReveal";
 
 const App = () => {
-  const contenedor = useRef();
-  useGSAP(
-    () => {
-      gsap.to(".caja", { rotation: 360, x: 100 });
-    },
-    { scope: contenedor }
-  );
-
   return (
     <>
-      <TextReveal />
+      <div className=" max-w-[1080px] mx-auto p-3 ">
+        <TextReveal />
+      </div>
     </>
   );
 };

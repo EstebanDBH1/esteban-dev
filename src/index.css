@@ -1,1 +1,44 @@
 @import "tailwindcss";
+
+:root {
+  --header-height: 90px;
+  --modal-header-height: 75px;
+  --layout-top-padding: 40px;
+  --layout-horizontal-padding: 20px;
+  --section-vertical-padding: 100px;
+  --page-hero-padding-top: 132px;
+  --send-message-padding: 104px 0 162px;
+  --full-screen-gutters: 90px;
+  --cursor-dimension: 124px;
+  --scene-max-height: 850px;
+  --light-grey: #e1dfdd;
+  --dark-teal: #464c47;
+  --black: #000;
+  --white: #fff;
+  --main-color: var(--black);
+  --transparent-white: hsla(0, 0%, 100%, 0.423);
+  --title-1: 56px;
+  --title-2: 20px;
+  --title-3: 30px;
+  --title-4: 20px;
+  --paragraph-text: 20px;
+  --lg-paragraph-text: 30px;
+  --lg-description-text: 32px;
+  --accordion-item-number: 20px;
+  --mobile-click-area-text: 22px;
+  --base-scale3d: scale3d(1, 1, 1);
+  --base-translate3d: translate3d(0, 0, 0);
+  --primary-curve: cubic-bezier(0.62, 0.05, 0.01, 0.99);
+}
+
+/* src/fonts.css */
+@font-face {
+  font-family: "PP";
+  src: url("/fonts/PPNeueMontreal-Medium.woff2") format("woff2");
+  font-display: swap;
+}
+
+body {
+  font-family: "PP", sans-serif;
+  background-color: #f8f8f8;
+}
