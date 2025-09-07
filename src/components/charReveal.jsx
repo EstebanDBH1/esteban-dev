@@ -1,78 +1,76 @@
 import React, { useRef, useState, useEffect } from "react";
-import { useGSAP } from "@gsap/react";
 import { gsap } from "gsap";
 import { SplitText } from "gsap/SplitText";
 import { CustomEase } from "gsap/CustomEase";
-// Registramos todos los plugins necesarios.
+
 gsap.registerPlugin(SplitText, CustomEase);
 
-// Definimos y le damos un nombre a tu curva cubic-bezier.
 CustomEase.create("primaryCurve", "M0,0 C0.62,0.05 0.01,0.99 1,1");
 
 const CharReveal = () => {
   const contenedorRef = useRef();
+  const parrafoRef = useRef();
   const [windowSize, setWindowSize] = useState({
     width: window.innerWidth,
-    height: window.innerHeight,
   });
 
-  // Escuchamos los cambios en el tamaño de la ventana para hacer la animación responsiva.
+  // Este useEffect se encarga de la lógica de re-renderizado
+  // cuando la pantalla cambia de tamaño.
   useEffect(() => {
     const handleResize = () => {
       setWindowSize({
         width: window.innerWidth,
-        height: window.innerHeight,
       });
     };
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Usamos el hook useGSAP para manejar la animación de forma segura en React.
-  useGSAP(
-    () => {
-      const parrafo = contenedorRef.current.querySelector("p");
+  // Este useEffect gestiona la animación y sus dependencias.
+  useEffect(() => {
+    let ctx = gsap.context(() => {
+      const parrafo = parrafoRef.current;
       if (parrafo) {
-        if (parrafo.split) {
-          parrafo.split.revert();
-        }
-
-        // LA CLAVE: Dividir por 'chars' en lugar de 'lines'
+        // La mejor práctica es crear la instancia de SplitText
+        // solo si no existe o si ha sido revertida.
         const split = new SplitText(parrafo, {
-          type: "chars", // ¡Aquí está el cambio!
+          type: "chars",
         });
-        parrafo.split = split;
 
-        // Creamos un div con overflow: hidden para CADA CARÁCTER.
         split.chars.forEach((charDiv) => {
-          // Iteramos sobre 'split.chars'
           const textContent = charDiv.innerHTML;
           charDiv.innerHTML = `<div class="char-inner-content">${textContent}</div>`;
           charDiv.style.overflow = "hidden";
-          // Importante: para que los caracteres no se amontonen,
-          // a veces es necesario que el contenedor del caracter sea 'inline-block'.
           charDiv.style.display = "inline-block";
         });
 
-        // Animamos el contenido del texto dentro de los divs de cada carácter.
         gsap.from(
           contenedorRef.current.querySelectorAll(".char-inner-content"),
           {
-            yPercent: 100, // Hace que el carácter se mueva desde abajo de su contenedor
-            skewY: 2, // Comienza con una escala más pequeña
-            stagger: 0.09, // Un 'stagger' mucho más pequeño para caracteres
-            duration: 1.5, // Ajustar duración para un efecto de carácter
-            ease: "power3.inOut",
+            yPercent: 100,
+            skewY: 1,
+            stagger: 0.08,
+            duration: 1.5,
+            ease: "primaryCurve",
           }
         );
       }
-    },
-    { scope: contenedorRef, dependencies: [windowSize.width] }
-  );
+    }, [parrafoRef]);
+
+    // La función de retorno de useEffect se encarga de la limpieza.
+    // Esto es lo que soluciona el problema de la lentitud.
+    return () => {
+      if (ctx) {
+        ctx.revert();
+      }
+    };
+  }, [windowSize.width]); // ¡La clave es que la animación se re-cree cuando el ancho cambie!
 
   return (
     <div className="container-reveal-chars" ref={contenedorRef}>
-      <p className=" uppercase text-5xl font-medium ">Esteban</p>
+      <p className="uppercase text-9xl font-medium p" ref={parrafoRef}>
+        Esteban
+      </p>
     </div>
   );
 };

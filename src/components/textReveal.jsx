@@ -66,7 +66,6 @@ const TextReveal = () => {
           {
             yPercent: 100, // Hace que el texto se anime desde abajo DENTRO de su wrapper con overflow: hidden
             stagger: 0.1,
-            skewY: 1,
             duration: 0.4,
             ease: "MyCustomEase",
           }

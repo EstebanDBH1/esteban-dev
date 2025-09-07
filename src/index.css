@@ -40,5 +40,5 @@
 
 body {
   font-family: "PP", sans-serif;
-  background-color: #f8f8f8;
+  background-color: var(--light-grey);
 }
