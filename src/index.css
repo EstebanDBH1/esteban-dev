@@ -41,7 +41,12 @@
 body {
   font-family: "PP", sans-serif;
   background-color: var(--light-grey);
+  opacity: 0;
 }
 
 /* Este estilo es CRUCIAL para evitar el parpadeo. */
 /* Oculta los elementos internos que se van a animar. */
+
+.inner-content {
+  color: red;
+}
