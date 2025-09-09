@@ -27,6 +27,10 @@ const AnimatedText = ({ text, type = "chars", className = "" }) => {
     let ctx = gsap.context(() => {
       const parrafo = parrafoRef.current;
       if (parrafo) {
+        // Asegúrate de que el contenedor principal esté visible para que SplitText pueda trabajar
+        gsap.set(contenedorRef.current, { visibility: "visible", opacity: 1 });
+        // Importante: también aseguramos que el párrafo NO tenga inicialmente la clase `animated-text-hidden` en el return.
+
         const split = new SplitText(parrafo, { type: type });
         const elementsToAnimate = type === "lines" ? split.lines : split.chars;
         const staggerValue = type === "lines" ? 0.1 : 0.08;
@@ -38,14 +42,28 @@ const AnimatedText = ({ text, type = "chars", className = "" }) => {
           if (type === "chars") {
             el.style.display = "inline-block";
           }
+          // Ocultamos cada elemento individualmente con GSAP.set()
+          gsap.set(el.querySelector(".inner-content"), {
+            yPercent: 100,
+            skewY: 1,
+            //opacity: 0,
+          });
         });
 
-        gsap.from(contenedorRef.current.querySelectorAll(".inner-content"), {
-          yPercent: 100,
-          skewY: 1,
+        // Ahora animamos para revelarlos
+        gsap.to(contenedorRef.current.querySelectorAll(".inner-content"), {
+          yPercent: 0,
+          skewY: 0,
+          opacity: 1, // Animamos la opacidad de 0 a 1
           stagger: staggerValue,
           duration: 1.5,
           ease: "primaryCurve",
+          // Si estás usando ScrollTrigger, lo añadirías aquí:
+          // scrollTrigger: {
+          //   trigger: contenedorRef.current,
+          //   start: "top 80%",
+          //   toggleActions: "play none none none",
+          // }
         });
       }
     }, [parrafoRef]);
@@ -59,8 +77,11 @@ const AnimatedText = ({ text, type = "chars", className = "" }) => {
 
   return (
     <div className={`animated-text-container ${className}`} ref={contenedorRef}>
-      {/* Añade la clase CSS para ocultar el texto */}
-      <h2 ref={parrafoRef} className="animated-text-hidden leading-[0.9]">
+      {/* QUITAMOS la clase animated-text-hidden del H2. 
+          GSAP se encargará de establecer el estado inicial y animar.
+          El CSS global con `no-js` aún es una buena práctica.
+      */}
+      <h2 ref={parrafoRef} className="leading-[0.9]">
         {text}
       </h2>
     </div>

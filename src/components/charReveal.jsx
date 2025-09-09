@@ -56,7 +56,6 @@ const CharReveal = () => {
         );
       }
     }, [parrafoRef]);
-
     // La función de retorno de useEffect se encarga de la limpieza.
     // Esto es lo que soluciona el problema de la lentitud.
     return () => {
