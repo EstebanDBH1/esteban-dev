@@ -12,8 +12,10 @@ const App = () => {
     <>
       <div className=" max-w-[1080px] mx-auto p-3  ">
         <div className=" flex flex-col justify-center items-center pb-9">
-          <AnimatedText text="Esteban" className=" text-7xl  uppercase" />
-          <AnimatedText text="David" className=" text-7xl uppercase" />
+          {/*   
+<AnimatedText text="Esteban" className=" text-7xl  uppercase" />
+<AnimatedText text="David" className=" text-7xl uppercase" />
+*/}
         </div>
         <TextReveal />
       </div>
