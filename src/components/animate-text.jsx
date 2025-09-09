@@ -2,25 +2,21 @@ import React, { useRef, useState, useEffect } from "react";
 import { gsap } from "gsap";
 import { SplitText } from "gsap/SplitText";
 import { CustomEase } from "gsap/CustomEase";
-import { ScrollTrigger } from "gsap/ScrollTrigger"; // Opcional, si quieres la animación con scroll
 
-gsap.registerPlugin(SplitText, CustomEase, ScrollTrigger);
+gsap.registerPlugin(SplitText, CustomEase);
 
 CustomEase.create("primaryCurve", "M0,0 C0.62,0.05 0.01,0.99 1,1");
 
-// Aceptamos las props `text` y `type` (por defecto "chars").
-const AnimatedText = ({ text, type = "chars", className = "" }) => {
-  const contenedorRef = useRef();
-  const parrafoRef = useRef();
+// Este es el hook personalizado que encapsula la lógica de GSAP.
+// Esto es opcional, pero hace el código extremadamente limpio.
+const useCharReveal = (ref, text, type) => {
   const [windowSize, setWindowSize] = useState({
     width: window.innerWidth,
   });
 
   useEffect(() => {
     const handleResize = () => {
-      setWindowSize({
-        width: window.innerWidth,
-      });
+      setWindowSize({ width: window.innerWidth });
     };
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
@@ -28,12 +24,9 @@ const AnimatedText = ({ text, type = "chars", className = "" }) => {
 
   useEffect(() => {
     let ctx = gsap.context(() => {
-      const parrafo = parrafoRef.current;
+      const parrafo = ref.current;
       if (parrafo) {
-        const split = new SplitText(parrafo, {
-          type: type,
-        });
-
+        const split = new SplitText(parrafo, { type: type });
         const elementsToAnimate = type === "lines" ? split.lines : split.chars;
         const staggerValue = type === "lines" ? 0.1 : 0.08;
 
@@ -46,7 +39,8 @@ const AnimatedText = ({ text, type = "chars", className = "" }) => {
           }
         });
 
-        gsap.from(contenedorRef.current.querySelectorAll(".inner-content"), {
+        // gsap.from() hace el "set" de forma interna e instantánea.
+        gsap.from(ref.current.querySelectorAll(".inner-content"), {
           yPercent: 100,
           skewY: 1,
           stagger: staggerValue,
@@ -54,18 +48,22 @@ const AnimatedText = ({ text, type = "chars", className = "" }) => {
           ease: "primaryCurve",
         });
       }
-    }, [parrafoRef]);
+    }, ref);
 
-    return () => {
-      if (ctx) {
-        ctx.revert();
-      }
-    };
-  }, [windowSize.width, text]); // Añadimos `text` como dependencia para re-animar si el texto cambia
+    return () => ctx.revert();
+  }, [ref, windowSize.width, text]); // Se re-ejecuta si cambian estas dependencias
+};
+
+const AnimatedText = ({ text, type = "chars", className = "" }) => {
+  const contenedorRef = useRef();
+  const parrafoRef = useRef();
+
+  // Llamamos al hook personalizado con las referencias y props.
+  useCharReveal(parrafoRef, text, type);
 
   return (
     <div className={`animated-text-container ${className}`} ref={contenedorRef}>
-      <p ref={parrafoRef} className=" leading-[0.9]  ">{text}</p>
+      <p ref={parrafoRef}>{text}</p>
     </div>
   );
 };
