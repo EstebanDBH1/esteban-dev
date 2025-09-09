@@ -7,7 +7,11 @@
      <link rel="preload" href="/fonts/PPNeueMontreal-Medium.woff2" as="font" type="font/woff2" crossorigin>
     <title>Vite + React</title>
   </head>
-  <body>
+  <body class="no-js">
+    <!-- Change the class to js if JavaScript is enabled -->
+    <script>
+    document.documentElement.className = document.documentElement.className.replace('no-js', 'js');
+  </script>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
