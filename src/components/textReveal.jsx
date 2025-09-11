@@ -65,7 +65,7 @@ const TextReveal = () => {
           contenedorRef.current.querySelectorAll(".line-text-content"),
           {
             yPercent: 100, // Hace que el texto se anime desde abajo DENTRO de su wrapper con overflow: hidden
-            stagger: 0.1,
+            stagger: 0.09,
             duration: 0.7,
             ease: "MyCustomEase",
           }
@@ -89,7 +89,7 @@ const TextReveal = () => {
       // El overflow hidden aquí es para el contenedor general si quieres ocultar todo al principio
       // pero el efecto de máscara por línea se logra con el CSS o JS adicional.
     >
-      <p id="txt" className=" text-[5vh] leading-[1.2] text-red-500">
+      <p id="txt" className=" text-[5vh] leading-[1.2] text-5xl">
         Hola, mi nombre es Esteban y soy desarrollador web front-end. Soy
         apasionado por la creación de experiencias digitales atractivas y
         funcionales. Me encanta trabajar con tecnologías modernas como React,

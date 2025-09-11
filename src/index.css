@@ -38,6 +38,10 @@
   font-display: swap;
 }
 
+html {
+  background-color: var(--light-grey);
+}
+
 body {
   font-family: "PP", sans-serif;
   background-color: var(--light-grey);

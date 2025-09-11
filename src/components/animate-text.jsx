@@ -58,6 +58,7 @@ const AnimatedText = ({ text, type = "chars", className = "" }) => {
           stagger: staggerValue,
           duration: 1.5,
           ease: "primaryCurve",
+          delay: 0.3,
           // Si estás usando ScrollTrigger, lo añadirías aquí:
           // scrollTrigger: {
           //   trigger: contenedorRef.current,
@@ -81,7 +82,7 @@ const AnimatedText = ({ text, type = "chars", className = "" }) => {
           GSAP se encargará de establecer el estado inicial y animar.
           El CSS global con `no-js` aún es una buena práctica.
       */}
-      <h2 ref={parrafoRef} className="leading-[0.9]">
+      <h2 ref={parrafoRef} className="leading-[0.9] ">
         {text}
       </h2>
     </div>
