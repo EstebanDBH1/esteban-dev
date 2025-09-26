@@ -49,7 +49,7 @@ const CharReveal = () => {
           {
             yPercent: 100,
             skewY: 1,
-            stagger: 0.08,
+            stagger: 0.06,
             duration: 1.5,
             ease: "primaryCurve",
           }
@@ -67,7 +67,7 @@ const CharReveal = () => {
 
   return (
     <div className="container-reveal-chars" ref={contenedorRef}>
-      <p className="uppercase text-9xl font-medium p" ref={parrafoRef}>
+      <p className="uppercase  text-[10vw] font-medium p" ref={parrafoRef}>
         Esteban
       </p>
     </div>

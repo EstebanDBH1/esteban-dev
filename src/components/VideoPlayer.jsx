@@ -17,8 +17,8 @@ const VideoPlayer = ({ src, title, thumbnail }) => {
 
   // Colores personalizados
   const accentColor = "var(--video-player-accent-color, #22d3ee)"; // Default: cyan-400
-  const progressBgColor = "bg-gray-700"; // Fondo de la barra de progreso
-  const progressFillColor = "bg-cyan-400"; // Color de relleno de la barra de progreso
+  const progressBgColor = "bg-gray-700";
+  const progressFillColor = "bg-cyan-400";
 
   // Formato de tiempo (MM:SS)
   const formatTime = (time) => {
@@ -60,7 +60,7 @@ const VideoPlayer = ({ src, title, thumbnail }) => {
       clearTimeout(window.controlTimeout);
       window.controlTimeout = setTimeout(() => {
         setShowControls(false);
-      }, 2500); // Ocultar después de 2.5 segundos de inactividad
+      }, 2500);
     }
   }, [isPlaying]);
 
@@ -78,7 +78,6 @@ const VideoPlayer = ({ src, title, thumbnail }) => {
     const percent = Math.min(Math.max(0, clickX / progressBar.offsetWidth), 1);
 
     if (e.buttons === 1 || e.type === "click") {
-      // Permitir click directo y arrastre
       videoRef.current.currentTime = percent * videoRef.current.duration;
       setProgress(percent * 100);
     }
@@ -86,7 +85,7 @@ const VideoPlayer = ({ src, title, thumbnail }) => {
 
   const handleScrubbingStart = useCallback(
     (e) => {
-      e.preventDefault(); // Prevenir selección de texto
+      e.preventDefault();
       setIsScrubbing(true);
       document.addEventListener("mousemove", handleScrubbing);
       document.addEventListener("mouseup", handleScrubbingEnd);
@@ -98,39 +97,20 @@ const VideoPlayer = ({ src, title, thumbnail }) => {
     setIsScrubbing(false);
     document.removeEventListener("mousemove", handleScrubbing);
     document.removeEventListener("mouseup", handleScrubbingEnd);
-    handleMouseMove(); // Mostrar controles brevemente después de soltar
+    handleMouseMove();
   }, [handleMouseMove, handleScrubbing]);
 
   const togglePlay = () => {
     if (videoRef.current.paused) {
       videoRef.current.play();
       setIsPlaying(true);
-      setShowControls(false); // Ocultar controles inmediatamente al empezar a reproducir
+      setShowControls(false);
     } else {
       videoRef.current.pause();
       setIsPlaying(false);
-      setShowControls(true); // Mostrar controles al pausar
+      setShowControls(true);
     }
   };
-
-  // Animación del botón de play central
-  useEffect(() => {
-    if (!isPlaying && showControls) {
-      // Solo animar si está pausado y los controles son visibles
-      gsap.fromTo(
-        ".center-play-button",
-        { scale: 0.8, opacity: 0 },
-        { scale: 1, opacity: 1, duration: 0.3, ease: "back.out(1.7)" }
-      );
-    } else {
-      gsap.to(".center-play-button", {
-        opacity: 0,
-        scale: 0.8,
-        duration: 0.2,
-        ease: "power2.in",
-      });
-    }
-  }, [isPlaying, showControls]);
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
@@ -144,8 +124,38 @@ const VideoPlayer = ({ src, title, thumbnail }) => {
     }
   };
 
+  // Para el centrado en pantalla completa en móviles
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      if (document.fullscreenElement) {
+        // En modo de pantalla completa, aplicar estilos para centrar el video
+        playerContainerRef.current.classList.add(
+          "fixed",
+          "top-0",
+          "left-0",
+          "w-screen",
+          "h-screen"
+        );
+      } else {
+        // Al salir de pantalla completa, eliminar los estilos
+        playerContainerRef.current.classList.remove(
+          "fixed",
+          "top-0",
+          "left-0",
+          "w-screen",
+          "h-screen"
+        );
+      }
+    };
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
+  }, []);
+
   const handleVolumeChange = (e) => {
-    const newVolume = parseFloat(e.target.value); // Convertir a número flotante
+    const newVolume = parseFloat(e.target.value);
     videoRef.current.volume = newVolume;
     setVolume(newVolume);
     setIsMuted(newVolume === 0);
@@ -157,14 +167,14 @@ const VideoPlayer = ({ src, title, thumbnail }) => {
     if (newMutedState) {
       videoRef.current.volume = 0;
     } else {
-      videoRef.current.volume = volume; // Restaurar al volumen anterior si no estaba silenciado
+      videoRef.current.volume = volume;
     }
   };
 
   return (
     <div
       ref={playerContainerRef}
-      className="relative w-full max-w-4xl mx-auto rounded-xl shadow-2xl overflow-hidden cursor-pointer"
+      className="relative w-full max-w-4xl mx-auto bg-neutral-900 rounded-lg shadow-2xl overflow-hidden"
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
@@ -196,37 +206,18 @@ const VideoPlayer = ({ src, title, thumbnail }) => {
 
         {/* Overlay Principal con Controles */}
         <div
-          className={`absolute inset-0 flex flex-col justify-between p-6 transition-opacity duration-300 pointer-events-none
+          className={`absolute inset-0 flex flex-col justify-between p-4 md:p-6 transition-opacity duration-300 pointer-events-none
             bg-gradient-to-t from-black/80 to-transparent
-            ${showControls ? "opacity-100" : "opacity-0"}
+            ${showControls || !isPlaying ? "opacity-100" : "opacity-0"}
           `}
         >
           {/* Título en la parte superior */}
-          <h2 className="text-white text-xl md:text-2xl font-bold mb-4 pointer-events-auto">
+          <h2 className="text-white text-lg md:text-xl font-bold mb-2 md:mb-4 pointer-events-auto">
             {title}
           </h2>
 
-          {/* Botón de Play central, visible cuando no está reproduciendo */}
-          {!isPlaying && (
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-auto">
-              <button
-                onClick={togglePlay}
-                className="center-play-button p-6 bg-white/30 rounded-full backdrop-blur-md text-white transition-all duration-300 hover:scale-110"
-                aria-label={isPlaying ? "Pausar video" : "Reproducir video"}
-              >
-                <svg
-                  className="h-10 w-10 md:h-16 md:w-16"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M8 5v14l11-7z" />
-                </svg>
-              </button>
-            </div>
-          )}
-
           {/* Barra de Controles Inferior */}
-          <div className="flex flex-col gap-2 pointer-events-auto">
+          <div className="flex flex-col gap-1 md:gap-2 pointer-events-auto">
             {/* Barra de Progreso */}
             <div
               ref={progressContainerRef}
@@ -239,21 +230,21 @@ const VideoPlayer = ({ src, title, thumbnail }) => {
                 style={{ width: `${progress}%` }}
               ></div>
               <div
-                className={`absolute -top-1.5 transform -translate-x-1/2 w-5 h-5 ${progressFillColor} rounded-full border-2 border-white opacity-0 group-hover:opacity-100 transition-opacity duration-200`}
+                className={`absolute -top-1.5 transform -translate-x-1/2 w-4 h-4 md:w-5 md:h-5 ${progressFillColor} rounded-full border-2 border-white opacity-0 group-hover:opacity-100 transition-opacity duration-200`}
                 style={{ left: `${progress}%` }}
               ></div>
             </div>
 
             {/* Mini-Controles inferiores (Play/Pausa, Tiempo, Volumen, Fullscreen) */}
-            <div className="mt-4 flex items-center justify-between text-white">
-              <div className="flex items-center gap-4">
+            <div className="mt-2 md:mt-4 flex items-center justify-between text-white">
+              <div className="flex items-center gap-2 md:gap-4">
                 {/* Botón Play/Pausa */}
                 <button
                   onClick={togglePlay}
-                  className="hover:text-cyan-400 transition-colors"
+                  className="p-1 md:p-0 hover:text-cyan-400 transition-colors"
                 >
                   <svg
-                    className="w-8 h-8"
+                    className="w-6 h-6 md:w-8 md:h-8"
                     fill="currentColor"
                     viewBox="0 0 24 24"
                   >
@@ -265,20 +256,20 @@ const VideoPlayer = ({ src, title, thumbnail }) => {
                   </svg>
                 </button>
                 {/* Visualización de Tiempo */}
-                <span className="text-sm font-light">
+                <span className="text-xs md:text-sm font-light">
                   {currentTime} / {duration}
                 </span>
               </div>
 
               {/* Controles de Volumen y Pantalla Completa */}
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 md:gap-4">
                 {/* Botón de Volumen */}
                 <button
                   onClick={toggleMute}
-                  className="hover:text-cyan-400 transition-colors"
+                  className="p-1 md:p-0 hover:text-cyan-400 transition-colors"
                 >
                   <svg
-                    className="w-6 h-6"
+                    className="w-5 h-5 md:w-6 md:h-6"
                     fill="currentColor"
                     viewBox="0 0 24 24"
                   >
@@ -297,15 +288,15 @@ const VideoPlayer = ({ src, title, thumbnail }) => {
                   step="0.01"
                   value={isMuted ? 0 : volume}
                   onChange={handleVolumeChange}
-                  className="w-20 cursor-pointer accent-cyan-400 range-slider" // accent-cyan-400 para el color del input range
+                  className="w-16 md:w-20 cursor-pointer accent-cyan-400 range-slider"
                 />
                 {/* Botón de Pantalla Completa */}
                 <button
                   onClick={toggleFullscreen}
-                  className="hover:text-cyan-400 transition-colors"
+                  className="p-1 md:p-0 hover:text-cyan-400 transition-colors"
                 >
                   <svg
-                    className="w-6 h-6"
+                    className="w-5 h-5 md:w-6 md:h-6"
                     fill="currentColor"
                     viewBox="0 0 24 24"
                   >

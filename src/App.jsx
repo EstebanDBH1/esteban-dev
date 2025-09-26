@@ -5,6 +5,8 @@ import AnimatedText from "./components/animate-text";
 import Header from "./components/header";
 import Portfolio from "./components/Portfolio";
 import VideoPlayer from "./components/VideoPlayer";
+import PromptBetter from "./components/PromptBetter";
+import CvBetter from "./components/cv-better";
 
 const App = () => {
   useEffect(() => {
@@ -13,12 +15,15 @@ const App = () => {
 
   return (
     <>
-      <main className=" p-5">
-        <VideoPlayer
-          src="https://www.w3schools.com/html/mov_bbb.mp4" // Reemplaza con la URL de tu video
-          title="Un Video Interesante"
-          thumbnail="https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg" // Reemplaza con la URL de tu miniatura
-        />
+      <main className=" max-w-[1000px] mx-auto p-5 flex  flex-col gap-5 ">
+        {/*
+          <VideoPlayer
+            src="https://www.w3schools.com/html/mov_bbb.mp4" // Reemplaza con la URL de tu video
+            title="Un Video Interesante"
+            thumbnail="https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg" // Reemplaza con la URL de tu miniatura
+          />
+          */}
+        <TextReveal />
       </main>
     </>
   );
